@@ -81,34 +81,34 @@ if __name__ == "__main__":
     eval_dset = dataset_dict['eval']
     eval_loader = DataLoader(eval_dset, batch_size=args.batch_size, drop_last=False, shuffle=False, num_workers=4)
 
-    # acc = 0.0
-    # test_feats = []
-    # test_preds = []
-    # test_probs = []
-    # test_labels = []
-    # with torch.no_grad():
-    #     for data in eval_loader:
-    #         image = data['x_lb']
-    #         target = data['y_lb']
-    #
-    #         image = image.type(torch.FloatTensor).cuda()
-    #         feat = net(image, only_feat=True)
-    #         logit = net(feat, only_fc=True)
-    #         prob = logit.softmax(dim=-1)
-    #         pred = prob.argmax(1)
-    #
-    #         acc += pred.cpu().eq(target).numpy().sum()
+    acc = 0.0
+    test_feats = []
+    test_preds = []
+    test_probs = []
+    test_labels = []
+    with torch.no_grad():
+        for data in eval_loader:
+            image = data['x_lb']
+            target = data['y_lb']
 
-    #         test_feats.append(feat.cpu().numpy())
-    #         test_preds.append(pred.cpu().numpy())
-    #         test_probs.append(prob.cpu().numpy())
-    #         test_labels.append(target.cpu().numpy())
-    # test_feats = np.concatenate(test_feats)
-    # test_preds = np.concatenate(test_preds)
-    # test_probs = np.concatenate(test_probs)
-    # test_labels = np.concatenate(test_labels)
+            image = image.type(torch.FloatTensor).cuda()
+            feat = net(image, only_feat=True)
+            logit = net(feat, only_fc=True)
+            prob = logit.softmax(dim=-1)
+            pred = prob.argmax(1)
 
-    # print(f"Test Accuracy: {acc / len(eval_dset) * 100}")
+            acc += pred.cpu().eq(target).numpy().sum()
+
+            test_feats.append(feat.cpu().numpy())
+            test_preds.append(pred.cpu().numpy())
+            test_probs.append(prob.cpu().numpy())
+            test_labels.append(target.cpu().numpy())
+    test_feats = np.concatenate(test_feats)
+    test_preds = np.concatenate(test_preds)
+    test_probs = np.concatenate(test_probs)
+    test_labels = np.concatenate(test_labels)
+
+    print(f"Test Accuracy: {acc / len(eval_dset) * 100}")
 
     if args.attack:
         from torchattacks import *
